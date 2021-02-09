@@ -10,6 +10,10 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+const employees= []
+function create(){
+
+
 inquirer.prompt([
     {
         type: "input", 
@@ -41,8 +45,11 @@ inquirer.prompt([
             name:"school",
             message:"what school did employee go to?",
         }).then(function(data){
+            const intern= new Intern(answers.name,answers.id,answers.email,data.school)
+            employees.push(intern)
             console.log("answers",answers)
             console.log("data",data)
+            next()
         })
     } else if(answers.role==="engineer"){
         inquirer.prompt({
@@ -50,8 +57,11 @@ inquirer.prompt([
             name:"github",
             message:"what is employees github?",
         }).then(function(data){
+            const engineer= new Engineer(answers.name,answers.id,answers.email,data.github)
+            employees.push(engineer)
             console.log("answer",answers)
             console.log("data",data)
+            next()
         })
     } else if (answers.role==="manager"){
         inquirer.prompt({
@@ -59,14 +69,32 @@ inquirer.prompt([
             name:"officeNumber",
             message:"what is employees office number?",
         }).then(function(data){
+            const manager= new Manager(answers.name,answers.id,answers.email,data.officeNumber)
+            employees.push(manager)
             console.log("answer",answers)
             console.log("data",data)
+            next()
         })
     }
- //   const employee= new Employee(answers.name, answers.id, answer.email, data.school)
+ 
+ 
 })
+}
+function next(){
 
-
+inquirer.prompt({
+    type:"confirm",
+    name:"next",
+    message:"do you want to add another employee?"
+}).then(function(response){
+    if(response.next){
+        create()
+    }else{
+        fs.writeFileSync(outputPath,render(employees))
+    }
+})
+}
+create()
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
